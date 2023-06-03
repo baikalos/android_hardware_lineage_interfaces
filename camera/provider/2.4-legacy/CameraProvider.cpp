@@ -16,6 +16,7 @@
 
 #define LOG_TAG "CamProvider@2.4-impl.legacy"
 #include <android/log.h>
+#define LOG_NDEBUG 0
 
 #include "CameraProvider.h"
 #include "CameraDevice_1_0.h"
@@ -74,6 +75,8 @@ void CameraProvider::sCameraDeviceStatusChange(
         ALOGE("%s: callback ops is null", __FUNCTION__);
         return;
     }
+
+    ALOGI("%s: sCameraDeviceStatusChange %s -> %d", __FUNCTION__, camera_id, new_status);
 
     Mutex::Autolock _l(cp->mCbLock);
     char cameraId[kMaxCameraIdLen];
@@ -346,8 +349,12 @@ Return<void> CameraProvider::getCameraIdList(getCameraIdList_cb _hidl_cb)  {
     std::vector<hidl_string> deviceNameList;
     for (auto const& deviceNamePair : mCameraDeviceNames) {
         if (mCameraStatusMap[deviceNamePair.first] == CAMERA_DEVICE_STATUS_PRESENT) {
-            deviceNameList.push_back(deviceNamePair.second);
+            ALOGE("%s: Camera id %s set to PRESENT!", __FUNCTION__, deviceNamePair.second.c_str());
+            //deviceNameList.push_back(deviceNamePair.second);
+        } else {
+            ALOGE("%s: Camera id %s set to NOT PRESENT!", __FUNCTION__, deviceNamePair.second.c_str());
         }
+        deviceNameList.push_back(deviceNamePair.second);
     }
     hidl_vec<hidl_string> hidlDeviceNameList(deviceNameList);
     _hidl_cb(Status::OK, hidlDeviceNameList);
