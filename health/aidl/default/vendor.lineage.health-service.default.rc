@@ -2,3 +2,4 @@ service vendor.lineage_health /vendor/bin/hw/vendor.lineage.health-service.defau
     class hal
     user system
     group system
+    writepid /dev/cpuset/system-background/tasks
