@@ -101,8 +101,11 @@ ndk::ScopedAStatus Power::setMode(Mode type, bool enabled) {
         case Mode::SUSTAINED_PERFORMANCE:
             if (enabled) {
                 HintManager::GetInstance()->DoHint("SUSTAINED_PERFORMANCE");
+                mSustainedPerfModeOn = true;
+            } else {
+                HintManager::GetInstance()->EndHint("SUSTAINED_PERFORMANCE");
+                mSustainedPerfModeOn = false;
             }
-            mSustainedPerfModeOn = true;
             break;
         case Mode::LAUNCH:
             if (mSustainedPerfModeOn) {
@@ -183,7 +186,7 @@ ndk::ScopedAStatus Power::setBoost(Boost type, int32_t durationMs) {
 
 ndk::ScopedAStatus Power::isBoostSupported(Boost type, bool *_aidl_return) {
     bool supported = supportFromBitset(mSupportInfo.boosts, type);
-    LOG(INFO) << "Power oost " << toString(type) << " isBoostSupported: " << supported;
+    LOG(INFO) << "Power boost " << toString(type) << " isBoostSupported: " << supported;
     *_aidl_return = supported;
     return ndk::ScopedAStatus::ok();
 }
